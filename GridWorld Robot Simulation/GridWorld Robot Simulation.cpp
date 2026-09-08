@@ -51,7 +51,6 @@ int check_distance() {
             }
         }
         break;
-       
 
     case RIGHT:
         for (int i = 0; i < 4; i++)
@@ -76,7 +75,6 @@ int check_distance() {
     return distance;
 }
 
-
 void draw_grid(std::string matrix[5][5]) {
     for (size_t i = 0; i < 5; i++)
     {
@@ -91,12 +89,11 @@ void draw_grid(std::string matrix[5][5]) {
 int main()
 {
     int userMovement;
-    int distance_to_obstacle = check_distance();
     
     world_matrix[robot_character.currentX][robot_character.currentY] = robot_character.robot_symbol;
 
     while (true) {
-
+        int distance_to_obstacle = check_distance();
         system("cls");
 
         robot_character.robot_symbol = symbols[robot_character.robot_heading];
@@ -110,12 +107,10 @@ int main()
         std::cin >> userMovement;
         world_matrix[robot_character.currentX][robot_character.currentY] = " ";
         
-        
         switch (userMovement) {
         case 1: // Left
             if (robot_character.currentY > 0 && world_matrix[robot_character.currentX][robot_character.currentY - 1] != "#")
             {
-                world_matrix[robot_character.currentX][robot_character.currentY - 1] = robot_character.robot_symbol;
                 robot_character.currentY--;
                 robot_character.robot_heading = LEFT;
             } 
@@ -124,17 +119,14 @@ int main()
         case 2: // Right
             if (world_matrix[robot_character.currentX][robot_character.currentY + 1] != "#")
             {
-                world_matrix[robot_character.currentX][robot_character.currentY + 1] = robot_character.robot_symbol;
                 robot_character.currentY++;  
                 robot_character.robot_heading = RIGHT;
-                
             }
             break;
 
         case 3: //  Up
             if (robot_character.currentX > 0 && world_matrix[robot_character.currentX - 1][robot_character.currentY] != "#")
             {
-                world_matrix[robot_character.currentX - 1][robot_character.currentY] = robot_character.robot_symbol;
                 robot_character.currentX--;
                 robot_character.robot_heading = UP;
             }
@@ -143,13 +135,11 @@ int main()
         case 4: // Down
             if (world_matrix[robot_character.currentX + 1][robot_character.currentY] != "#")
             {
-                world_matrix[robot_character.currentX + 1][robot_character.currentY] = robot_character.robot_symbol;
                 robot_character.currentX++;
                 robot_character.robot_heading = DOWN;
             }
             break;
             
         }
-
     }
 }
