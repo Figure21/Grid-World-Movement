@@ -3,14 +3,6 @@
 #include <vector>
 #include <thread>
 
-/*std::string world_matrix[5][5] = {
-    {"#", "#", "#", "#", "#"},
-    {"#", " ", " ", " ", "#"},
-    {"#", " ", " ", " ", "#"},
-    {"#", " ", " ", " ", "#"},
-    {"#", "#", "#", "#", "#"}
-};*/
-
 int height = 5;
 int width = 15;
 
@@ -20,7 +12,6 @@ void draw_grid_v2() {
 
     std::string frame = "\x1B[H";
 
-
     for (size_t i = 0; i < height; i++)
     {
         for (size_t j = 0; j < width; j++)
@@ -28,15 +19,11 @@ void draw_grid_v2() {
             if (i == 0 || i == height - 1 || j == 0 || j == width - 1) {
                 grid[i][j] = '#';
             }
-            //std::cout << grid[i][j] << "";
             frame += grid[i][j]; 
         }
         frame += '\n';
-        //std::cout << std::endl;
     }
-
     std::cout << frame << std::flush;
-
 }
 
 enum Heading {
@@ -63,6 +50,7 @@ int check_distance() {
 
     switch (robot_character.robot_heading) {
     case UP:
+        
         for (int i = 1; (robot_character.currentX - i) >= 0; i++)
         {
             if (grid[robot_character.currentX - i][robot_character.currentY] == '#') {
@@ -73,7 +61,7 @@ int check_distance() {
         break;
 
     case DOWN:
-        for (int i = 0; i < 4; i++)
+        for (int i = 1; (robot_character.currentX + i) < height; i++)
         {
             if (grid[robot_character.currentX + i][robot_character.currentY] == '#') {
                 distance = i - 1;
@@ -102,6 +90,7 @@ int check_distance() {
         }
         break;  
     }
+    
     return distance;
 }
 
@@ -126,20 +115,18 @@ int main()
     grid[robot_character.currentX][robot_character.currentY] = robot_character.robot_symbol;
 
     while (true) {
-        int distance_to_obstacle = check_distance();
-        //system("cls");
-
+        
         robot_character.robot_symbol = symbols[robot_character.robot_heading];
         grid[robot_character.currentX][robot_character.currentY] = robot_character.robot_symbol;
         
         draw_grid_v2();
-        //std::this_thread::sleep_for(std::chrono::milliseconds(150));
+        int distance_to_obstacle = check_distance();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         
         std::cout << "1: Left | 2: Right | 3: Up | 4: Down \n";       
-        std::cout << "Tiles until you hit obstacle: " << distance_to_obstacle << "\n";
+        std::cout << "Tiles until you hit obstacle: " << distance_to_obstacle << "         \n";
         std::cout << "Where do you want to move?: \x1B[J";
         std::cin >> moveChar;
-        //system("cls");
 
         grid[robot_character.currentX][robot_character.currentY] = ' ';
         
