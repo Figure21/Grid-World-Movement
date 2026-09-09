@@ -1,13 +1,43 @@
 
 #include <iostream>
+#include <vector>
+#include <thread>
 
-std::string world_matrix[5][5] = {
+/*std::string world_matrix[5][5] = {
     {"#", "#", "#", "#", "#"},
     {"#", " ", " ", " ", "#"},
     {"#", " ", " ", " ", "#"},
     {"#", " ", " ", " ", "#"},
     {"#", "#", "#", "#", "#"}
-};
+};*/
+
+int height = 5;
+int width = 15;
+
+std::vector<std::vector<char>> grid(height, std::vector<char>(width, ' '));
+
+void draw_grid_v2() {
+
+    std::string frame = "\x1B[H";
+
+
+    for (size_t i = 0; i < height; i++)
+    {
+        for (size_t j = 0; j < width; j++)
+        {
+            if (i == 0 || i == height - 1 || j == 0 || j == width - 1) {
+                grid[i][j] = '#';
+            }
+            //std::cout << grid[i][j] << "";
+            frame += grid[i][j]; 
+        }
+        frame += '\n';
+        //std::cout << std::endl;
+    }
+
+    std::cout << frame << std::flush;
+
+}
 
 enum Heading {
     UP,
@@ -16,12 +46,12 @@ enum Heading {
     LEFT
 };
 
-std::string symbols[4] = { "^", "v", ">", "<" };
+char symbols[4] = { '^', 'v', '>', '<' };
 
 struct Robot {
     int currentX = 2;
     int currentY = 1;
-    std::string robot_symbol = ">";
+    char robot_symbol = '>';
     
     Heading robot_heading = RIGHT;
 };
@@ -35,7 +65,7 @@ int check_distance() {
     case UP:
         for (int i = 1; (robot_character.currentX - i) >= 0; i++)
         {
-            if (world_matrix[robot_character.currentX - i][robot_character.currentY] == "#") {
+            if (grid[robot_character.currentX - i][robot_character.currentY] == '#') {
                 distance = i - 1;
                 break;
             }
@@ -45,7 +75,7 @@ int check_distance() {
     case DOWN:
         for (int i = 0; i < 4; i++)
         {
-            if (world_matrix[robot_character.currentX + i][robot_character.currentY] == "#") {
+            if (grid[robot_character.currentX + i][robot_character.currentY] == '#') {
                 distance = i - 1;
                 break;
             }
@@ -53,9 +83,9 @@ int check_distance() {
         break;
 
     case RIGHT:
-        for (int i = 0; i < 4; i++)
+        for (int i = 1; (robot_character.currentY + i) < width; i++)
         {
-            if (world_matrix[robot_character.currentX][robot_character.currentY + i] == "#") {
+            if (grid[robot_character.currentX][robot_character.currentY + i] == '#') {
                 distance = i - 1;
                 break;
             }
@@ -65,7 +95,7 @@ int check_distance() {
     case LEFT:
         for (int i = 1; (robot_character.currentY - i) >= 0; i++)
         {
-            if (world_matrix[robot_character.currentX][robot_character.currentY - i] == "#") {
+            if (grid[robot_character.currentX][robot_character.currentY - i] == '#') {
                 distance = i - 1;
                 break; 
             }
@@ -89,51 +119,57 @@ void draw_grid(std::string matrix[5][5]) {
 int main()
 {
     int userMovement;
-    
-    world_matrix[robot_character.currentX][robot_character.currentY] = robot_character.robot_symbol;
+     
+    char moveChar;
+
+
+    grid[robot_character.currentX][robot_character.currentY] = robot_character.robot_symbol;
 
     while (true) {
         int distance_to_obstacle = check_distance();
-        system("cls");
+        //system("cls");
 
         robot_character.robot_symbol = symbols[robot_character.robot_heading];
-        world_matrix[robot_character.currentX][robot_character.currentY] = robot_character.robot_symbol;
+        grid[robot_character.currentX][robot_character.currentY] = robot_character.robot_symbol;
         
-        draw_grid(world_matrix);
+        draw_grid_v2();
+        //std::this_thread::sleep_for(std::chrono::milliseconds(150));
         
         std::cout << "1: Left | 2: Right | 3: Up | 4: Down \n";       
         std::cout << "Tiles until you hit obstacle: " << distance_to_obstacle << "\n";
-        std::cout << "Where do you want to move?: ";
-        std::cin >> userMovement;
-        world_matrix[robot_character.currentX][robot_character.currentY] = " ";
+        std::cout << "Where do you want to move?: \x1B[J";
+        std::cin >> moveChar;
+        //system("cls");
+
+        grid[robot_character.currentX][robot_character.currentY] = ' ';
         
-        switch (userMovement) {
-        case 1: // Left
-            if (robot_character.currentY > 0 && world_matrix[robot_character.currentX][robot_character.currentY - 1] != "#")
+        switch (moveChar) {
+        case 'a': // Left
+            if (robot_character.currentY > 0 && grid[robot_character.currentX][robot_character.currentY - 1] != '#')
             {
                 robot_character.currentY--;
                 robot_character.robot_heading = LEFT;
             } 
             break;
 
-        case 2: // Right
-            if (world_matrix[robot_character.currentX][robot_character.currentY + 1] != "#")
+        case 'd': // Right
+            if (grid[robot_character.currentX][robot_character.currentY + 1] != '#')
             {
                 robot_character.currentY++;  
                 robot_character.robot_heading = RIGHT;
             }
             break;
 
-        case 3: //  Up
-            if (robot_character.currentX > 0 && world_matrix[robot_character.currentX - 1][robot_character.currentY] != "#")
+        case 'w': //  Up
+            if (robot_character.currentX > 0 && grid[robot_character.currentX - 1][robot_character.currentY] != '#')
             {
                 robot_character.currentX--;
                 robot_character.robot_heading = UP;
             }
             break;
 
-        case 4: // Down
-            if (world_matrix[robot_character.currentX + 1][robot_character.currentY] != "#")
+        case 's': // Down
+            if (grid[robot_character.currentX + 1][robot_character.currentY] != '#')
             {
                 robot_character.currentX++;
                 robot_character.robot_heading = DOWN;
